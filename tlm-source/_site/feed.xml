@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+<title type="text">Techies Like Me</title>
+<subtitle type="text">Welcoming all Techies</subtitle>
+<generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
+<link rel="self" type="application/atom+xml" href="/feed.xml" />
+<link rel="alternate" type="text/html" href="" />
+<updated>2013-08-18T23:29:37-04:00</updated>
+<id>/</id>
+<author>
+  <name>smtechnocrat</name>
+  <uri>/</uri>
+  <email>your@email.com</email>
+</author>
+
+
+<entry>
+  <title type="html"><![CDATA[Build your own web site in 10 easy steps.]]></title>
+  <link rel="alternate" type="text/html" href="/articles/sm-post1" />
+  <id>/articles/sm-post1</id>
+  <updated>2013-08-18T00:00:00-00:00</updated>
+  <published>2013-08-17T00:00:00-04:00</published>
+  
+  <author>
+    <name>smtechnocrat</name>
+    <uri></uri>
+    <email>your@email.com</email>
+  </author>
+  <content type="html">&lt;section id=&quot;table-of-contents&quot; class=&quot;toc&quot;&gt;
+  &lt;header&gt;
+    &lt;h3 class=&quot;delta&quot;&gt;Contents&lt;/h3&gt;
+  &lt;/header&gt;
+&lt;div id=&quot;drawer&quot;&gt;
+&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#what-is-jekylljekyll-site&quot;&gt;What is &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll&lt;/a&gt;?&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#why-use-jekyll&quot;&gt;Why use Jekyll?&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#a-whirlwind-tour-of-jekyll&quot;&gt;A Whirlwind tour of Jekyll&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#building-your-site-in-10-easy-steps&quot;&gt;Building your site in 10 easy steps.&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#pre-requisites&quot;&gt;Pre-requisites&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#step-1---install-jekyll&quot;&gt;Step 1 - Install Jekyll&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#step-2---choose-a-theme-for-your-site&quot;&gt;Step 2 - Choose a Theme for your site&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#step-3---configure-your-site&quot;&gt;Step 3 - Configure your site&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#step-4---start-writing-your-own-posts&quot;&gt;Step 4 - Start writing your own posts&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#step-5---build-and-deploy-your-site&quot;&gt;Step 5 - Build and Deploy your site&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#conclusions&quot;&gt;Conclusions&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#blockquotes&quot;&gt;Blockquotes&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#list-types&quot;&gt;List Types&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#ordered-lists&quot;&gt;Ordered Lists&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#unordered-lists&quot;&gt;Unordered Lists&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#tables&quot;&gt;Tables&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#code-snippets&quot;&gt;Code Snippets&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#buttons&quot;&gt;Buttons&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;!-- /#table-of-contents --&gt;
+
+&lt;p&gt;Below is just about everything I needed  to know about building your very own website. It is easy to build and if you use github then it will be even easier to maintain.&lt;/p&gt;
+
+&lt;p&gt;Before I start I must thank &lt;a href=&quot;http://http://mademistakes.com/about.html&quot;&gt;Michael Rose&lt;/a&gt; for providing this awesome theme for my blog. Check out his github template.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-jekylljekyll-site&quot;&gt;What is &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll&lt;/a&gt;?&lt;/h3&gt;
+&lt;p&gt;First of Jekyll is the engine behind GitHub web pages. It is a Ruby script used to generate static HTML websites from source text and themes. HTML is generated before being deployed to the web server therefore it is a static website which can be make your website extremely fast and secure. &lt;/p&gt;
+
+&lt;h3 id=&quot;why-use-jekyll&quot;&gt;Why use Jekyll?&lt;/h3&gt;
+&lt;p&gt;There are a number of popular blogging platforms available today. However if you want to host your own website you will need to know all the performance tweaks and optimizations otherwise these hosted platforms can easily bring down your server. You will also find a number of popular third party firms that specializes in blog hosting services such as WPEngine and Wordpress.com&lt;/p&gt;
+
+&lt;h3 id=&quot;a-whirlwind-tour-of-jekyll&quot;&gt;A Whirlwind tour of Jekyll&lt;/h3&gt;
+
+&lt;p&gt;Here are some basic Jekyll commands.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll new myblog
+&lt;span class=&quot;c&quot;&gt;# =&amp;gt; Create a blog site&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$jekyll&lt;/span&gt; -w serve
+&lt;span class=&quot;c&quot;&gt;# =&amp;gt; build and watch for changes and also serve the site at http://localhost:4000&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Jekyll comes with an embedded web server for development purpose only.&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll build
+&lt;span class=&quot;c&quot;&gt;# =&amp;gt; The current folder will be generated into ./_site&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll build --destination &amp;lt;destination&amp;gt;
+&lt;span class=&quot;c&quot;&gt;# =&amp;gt; The current folder will be generated into &amp;lt;destination&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll build --source &amp;lt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;&amp;gt; --destination &amp;lt;destination&amp;gt;
+&lt;span class=&quot;c&quot;&gt;# =&amp;gt; The &amp;lt;source&amp;gt; folder will be generated into &amp;lt;destination&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll build --watch
+&lt;span class=&quot;c&quot;&gt;# =&amp;gt; The current folder will be generated into ./_site,&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#    watched for changes, and regenerated automatically.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;building-your-site-in-10-easy-steps&quot;&gt;Building your site in 10 easy steps.&lt;/h3&gt;
+
+&lt;h5 id=&quot;pre-requisites&quot;&gt;Pre-requisites&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;h5 id=&quot;step-1---install-jekyll&quot;&gt;Step 1 - Install Jekyll&lt;/h5&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt;  &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem install jekyll
+&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt;  &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll new myblog
+&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt;  &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;myblog
+&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt;  &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll -w serve
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now browse to link &lt;em&gt;http://localhost:4000&lt;/em&gt;. You should see a working default blog site.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;h5 id=&quot;step-2---choose-a-theme-for-your-site&quot;&gt;Step 2 - Choose a Theme for your site&lt;/h5&gt;
+    &lt;p&gt;You can use any theme you like including create your own theme. But if you are like me who would rather spend time doing server side coding then there are a lot of generous folks who have created excellent themes for use.
+I have used Michael Rose’s minimal mistakes theme, he also has a newer theme as well. check his themes out. But here are some other alternatives to choose from&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;h5 id=&quot;step-3---configure-your-site&quot;&gt;Step 3 - Configure your site&lt;/h5&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;h5 id=&quot;step-4---start-writing-your-own-posts&quot;&gt;Step 4 - Start writing your own posts&lt;/h5&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;h5 id=&quot;step-5---build-and-deploy-your-site&quot;&gt;Step 5 - Build and Deploy your site&lt;/h5&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;conclusions&quot;&gt;Conclusions&lt;/h3&gt;
+
+&lt;p class=&quot;pull-right&quot;&gt;&lt;img src=&quot;/images/3953273590_704e3899d5_m.jpg&quot; alt=&quot;Smithsonian Image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;This is emphasized&lt;/em&gt;. Donec faucibus. Nunc iaculis suscipit dui. 53 = 125. Water is H2O. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. The New York Times (That’s a citation). Underline.Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.&lt;/p&gt;
+
+&lt;p&gt;HTML and CSS are our tools. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus.&lt;/p&gt;
+
+&lt;h3 id=&quot;blockquotes&quot;&gt;Blockquotes&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Lorem ipsum dolor sit amet, test link adipiscing elit. Nullam dignissim convallis est. Quisque aliquam.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;list-types&quot;&gt;List Types&lt;/h2&gt;
+
+&lt;h3 id=&quot;ordered-lists&quot;&gt;Ordered Lists&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Item one
+    &lt;ol&gt;
+      &lt;li&gt;sub item one&lt;/li&gt;
+      &lt;li&gt;sub item two&lt;/li&gt;
+      &lt;li&gt;sub item three&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Item two&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;unordered-lists&quot;&gt;Unordered Lists&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Item one&lt;/li&gt;
+  &lt;li&gt;Item two&lt;/li&gt;
+  &lt;li&gt;Item three&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;tables&quot;&gt;Tables&lt;/h2&gt;
+
+&lt;table rules=&quot;groups&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Header1&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Header2&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Header3&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;cell1&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;cell2&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;cell3&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;cell4&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;cell5&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;cell6&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;cell1&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;cell2&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;cell3&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;cell4&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;cell5&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;cell6&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Foot1&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;Foot2&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;Foot3&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tfoot&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;code-snippets&quot;&gt;Code Snippets&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt;   &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt;   &lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;   * Get a connection to the server&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;   */&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;6&lt;/span&gt;   &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;serve&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServerNotFoundexception&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;7&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;8&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;buttons&quot;&gt;Buttons&lt;/h2&gt;
+
+&lt;p&gt;Make any link standout more when applying the &lt;code&gt;.btn&lt;/code&gt; class.&lt;/p&gt;
+
+&lt;div&gt;&lt;a href=&quot;#&quot; class=&quot;btn&quot;&gt;This is a button&lt;/a&gt;&lt;/div&gt;
+
+&lt;div&gt;&lt;a href=&quot;#&quot; class=&quot;btn btn-inverse&quot;&gt;This is an inverse button&lt;/a&gt;&lt;/div&gt;
+
+&lt;div&gt;&lt;a href=&quot;#&quot; class=&quot;btn btn-small&quot;&gt;This is small button&lt;/a&gt;&lt;/div&gt;
+
+&lt;div&gt;&lt;a href=&quot;#&quot; class=&quot;btn btn-inverse btn-small&quot;&gt;Small inverse button&lt;/a&gt;&lt;/div&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;/articles/sm-post1&quot;&gt;Build your own web site in 10 easy steps.&lt;/a&gt; was originally published by smtechnocrat at &lt;a href=&quot;&quot;&gt;Techies Like Me&lt;/a&gt; on August 17, 2013.&lt;/p&gt;</content>
+</entry>
+
+</feed>
