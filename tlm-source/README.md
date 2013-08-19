@@ -1,7 +1,3 @@
-# Techies Like Me
-
-Jekyll is pretty rad and figured releasing a cleaned up version of [my setup](http://mademistakes.com) as a theme to hack up and use would be cool. So here be that theme --- I call it **[Minimal Mistakes](http://mmistakes.github.io/minimal-mistakes)**, a responsive Jekyll theme with editorial tendencies. 
-
 ## Techies Like Me is all about:
 
 * Responsive templates. Looking good on mobile, tablet, and desktop.
