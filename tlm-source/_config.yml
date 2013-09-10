@@ -2,14 +2,14 @@ title:            Techies Like Me
 tagline:          Welcoming all Techies
 description:      A website to share your experience and make this world more technology savy.
 #Comment out url when working locally to resolve base urls correctly
-#url:              http://your-site.com
+url:              http://techieslikeme.com
 
 # Owner/author information
 owner:
   name:           smtechnocrat          
   avatar:         bio-photo.jpg
   bio:            "A self proclaimed technocrat..."
-  email:          your@email.com
+  email:          smtechnocrat@gmail.com
   # Social networking links are used in author-bio sidebar. Update and remove as you like.
   twitter:        
   facebook:       
