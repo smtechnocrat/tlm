@@ -1,0 +1,11 @@
+<img src="{{ site.url }}/images/{{ author.avatar }}" class="bio-photo" alt="{{ author.name }} bio photo" width="100" height="100"></a>
+<h4>{{ author.name }}</h4>
+<p>{{ author.bio }}</p>
+{% if author.twitter %}<p style="text-indent:0;margin-top:1.5em;"><a href="http://twitter.com/{{ author.twitter }}" target="_blank"><i class="icon-twitter"></i> Twitter</a></p>{% endif %}
+{% if author.facebook %}<p style="text-indent:0;"><a href="http://facebook.com/{{ author.facebook }}" target="_blank"><i class="icon-facebook"></i> Facebook</a></p>{% endif %}
+{% if author.google_plus %}<p style="text-indent:0;"><a href="{{ author.google_plus }}" target="_blank"><i class="icon-google-plus"></i> Google+</a></p>{% endif %}
+{% if author.linkedin %}<p style="text-indent:0;"><a href="http://linkedin.com/in/{{ author.linkedin }}" target="_blank"><i class="icon-linkedin"></i> LinkedIn</a></p>{% endif %}
+{% if author.instagram %}<p style="text-indent:0;"><a href="http://instagram.com/{{ author.instagram }}" target="_blank"><i class="icon-instagram"></i> Instagram</a></p>{% endif %}
+{% if author.github %}<p style="text-indent:0;"><a href="http://github.com/{{ author.github }}" target="_blank"><i class="icon-github"></i> Github</a></p>{% endif %}
+{% if author.lastfm %}<p style="text-indent:0;"><a href="http://lastfm.com/{{ author.lastfm }}" target="_blank"><i class="icon-lastfm"></i> Last.fm</a></p>{% endif %}
+{% if author.tumblr %}<p style="text-indent:0;"><a href="http://{{ author.tumblr }}.tumblr.com" target="_blank"><i class="icon-tumblr"></i> Tumblr</a></p>{% endif %}

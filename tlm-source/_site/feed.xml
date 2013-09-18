@@ -3,28 +3,245 @@
 <title type="text">Techies Like Me</title>
 <subtitle type="text">Welcoming all Techies</subtitle>
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="/feed.xml" />
-<link rel="alternate" type="text/html" href="" />
-<updated>2013-08-18T23:29:37-04:00</updated>
-<id>/</id>
+<link rel="self" type="application/atom+xml" href="http://techieslikeme.com/feed.xml" />
+<link rel="alternate" type="text/html" href="http://techieslikeme.com" />
+<updated>2013-09-18T05:41:22+01:00</updated>
+<id>http://techieslikeme.com/</id>
 <author>
   <name>smtechnocrat</name>
-  <uri>/</uri>
-  <email>your@email.com</email>
+  <uri>http://techieslikeme.com/</uri>
+  <email>smtechnocrat@gmail.com</email>
 </author>
 
 
 <entry>
+  <title type="html"><![CDATA[Create Your Own Rules Engine Using MVEL and XML]]></title>
+  <link rel="alternate" type="text/html" href="http://techieslikeme.com/articles/create-rules-engine" />
+  <id>http://techieslikeme.com/articles/create-rules-engine</id>
+  <published>2013-09-14T00:00:00+01:00</published>
+  <updated>2013-09-14T00:00:00+01:00</updated>
+  <author>
+    <name>smtechnocrat</name>
+    <uri>http://techieslikeme.com</uri>
+    <email>smtechnocrat@gmail.com</email>
+  </author>
+  <content type="html">&lt;section id=&quot;table-of-contents&quot; class=&quot;toc&quot;&gt;
+  &lt;header&gt;
+    &lt;h3&gt;Contents&lt;/h3&gt;
+  &lt;/header&gt;
+&lt;div id=&quot;drawer&quot;&gt;
+&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#rule-definition-in-xml&quot;&gt;Rule Definition In XML&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#code-to-parse-xml-and-evaluate-rule&quot;&gt;Code To Parse XML And Evaluate Rule&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#blue-print&quot;&gt;Blue Print&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#features&quot;&gt;Features&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#key-classes&quot;&gt;Key Classes&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#rule-engine-api&quot;&gt;Rule Engine Api&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#xpressit&quot;&gt;XpressIt&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;!-- /#table-of-contents --&gt;
+
+&lt;p&gt;MVEL is a powerful expression language for Java-based applications. It provides a plethora of features and is suited for everything from the smallest property binding and extraction, to full blown scripts.
+Rules are defined as expressions which are evaluated at runtime on the facts provided. So that explains our choice of MVEL. Now to define the rules and to have a persistent store for our rules, we choose
+XML as most people have worked with XML in some shape or form. Using XML to define our rules also obviates the need of a special editor as most IDEs provide built-in support for XML. Now using these two key
+tools lets start building our rules engine. Note that a full featured open source rules engine (XpressIt) is available for you using the same blue print that we will be discussing in this article. &lt;/p&gt;
+
+&lt;h2 id=&quot;rule-definition-in-xml&quot;&gt;Rule Definition In XML&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;rule&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;defaultTrader&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;condition&amp;gt;&lt;/span&gt;
+		swap.traderId == null;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;/condition&amp;gt;&lt;/span&gt;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;action&amp;gt;&lt;/span&gt;
+		swap.traderId = &amp;#39;system&amp;#39;;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;/action&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/rule&amp;gt;&lt;/span&gt;	
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In this rule, &lt;code&gt;swap.traderId == null&lt;/code&gt; is a mvel expression. The expression implies that at runtime , the context will have a variable called swap referring to an object which will have a field called traderId.
+Note, that condition is always a boolean expression returning true or false. If the expression evaluates to true, we would like to execute an action which is defined in the rule under &lt;code&gt;&amp;lt;action&amp;gt;&lt;/code&gt; element. Note that
+&lt;code&gt;swap.traderId = &#39;system&#39;&lt;/code&gt; is an assignment expression in mvel. The rule essentially checks to see if the traderId is null, then assign traderId to ‘system’.&lt;/p&gt;
+
+&lt;h2 id=&quot;code-to-parse-xml-and-evaluate-rule&quot;&gt;Code To Parse XML And Evaluate Rule&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;//key imports&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.mvel2.MVEL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.mvel2.ParserContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.mvel2.compiler.CompiledExpression&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.mvel2.compiler.ExpressionCompiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.dom4j.Document&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.dom4j.Element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.dom4j.io.SAXReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;..........&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;.....&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;......&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;SAXReader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SAXReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Document&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;document&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;read&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ruleFileDir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Element&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRootElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Element&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleElement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;rule&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;attributeValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;condition&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;condition&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleElement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;action&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Expression&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;conditionExpression&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ExpressionCompiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;condition&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParserContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Expression&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actionExpression&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ExpressionCompiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParserContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//Assuming we have a class called Swap with field traderId and few other fields&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//Lets construct a new Swap with no fields initialized.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Swap&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Swap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;swap&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MVEL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;executeExpression&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conditionExpression&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//if the condition was true, we now evaluate the actionExpression to set the traderId.&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;MVEL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;executeExpression&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;actionExpression&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the sections above, we just covered the basics of rule evaluation. But in the full featured implementation, we have to do a little more than that.
+For example, we cannot compile the expression each time a rule is invoked. We have to organize the rules into rule sets. These are just a few of things we need
+to consider for the full featured implementation. Lets talks about these and more in the next section.&lt;/p&gt;
+
+&lt;h2 id=&quot;blue-print&quot;&gt;Blue Print&lt;/h2&gt;
+
+&lt;h3 id=&quot;features&quot;&gt;Features&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Ability to define Rule(s) in easy, yet extremely powerful MVEL expression language&lt;/li&gt;
+  &lt;li&gt;Categorize Rule(s) into RuleSet(s) for a logical grouping of rules&lt;/li&gt;
+  &lt;li&gt;Store Rule(s) and RuleSet(s) into a RuleBase&lt;/li&gt;
+  &lt;li&gt;Shared Rules that can be used across all rule sets in the rules engine&lt;/li&gt;
+  &lt;li&gt;Ability to retract Fact(s) during rule invocation  to make further rules in-eligible from firing&lt;/li&gt;
+  &lt;li&gt;Ability to inject Fact(s) during rule invocation to make further rules eligible for firing&lt;/li&gt;
+  &lt;li&gt;Define Global variables that can be used implicitly within any rule in rules engine&lt;/li&gt;
+  &lt;li&gt;Define RuleSet variables that can be used implicitly within any rule in a given RuleSet&lt;/li&gt;
+  &lt;li&gt;Ability to define error code and error messages within rule invocation&lt;/li&gt;
+  &lt;li&gt;Ability to add additional data to be returned within rule invocation besides the original Facts&lt;/li&gt;
+  &lt;li&gt;Handle to modified facts, errors and additional data on completion of rule firing&lt;/li&gt;
+  &lt;li&gt;Simple and elegant API&lt;/li&gt;
+  &lt;li&gt;Support for Decision Tables&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;key-classes&quot;&gt;Key Classes&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt/blob/master/src/main/java/org/drexten/rules/engine/Fact.java&quot;&gt;Fact&lt;/a&gt;, representing the user data on which rules need to be evaluated&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt/blob/master/src/main/java/org/drexten/rules/engine/xpressit/Rule.java&quot;&gt;Rule&lt;/a&gt;, class representing the rule. Contains the expression that need to be evaluated&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt/blob/master/src/main/java/org/drexten/rules/engine/xpressit/RuleSet.java&quot;&gt;RuleSet&lt;/a&gt;, a collection of Rule(s) where the name of the RuleSet represents the category&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt/blob/master/src/main/java/org/drexten/rules/engine/xpressit/RuleBase.java&quot;&gt;RuleBase&lt;/a&gt;, an in-memory datastructure to store Rule(s) and RuleSet(s)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt/blob/master/src/main/java/org/drexten/rules/engine/xpressit/RuleParser.java&quot;&gt;RuleParser&lt;/a&gt;, an XML parser that parses the rules from the xml rule definitions and creates Rule/RuleSet/RuleBase&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt/blob/master/src/main/java/org/drexten/rules/engine/xpressit/Expression.java&quot;&gt;Expression&lt;/a&gt;, an abstract class that contains the expression , designed for extension to support multiple expression languages&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt/blob/master/src/main/java/org/drexten/rules/engine/xpressit/MvelExpression.java&quot;&gt;MVELExpression&lt;/a&gt; , an extension of Expression that knows how to evaluate expressions(conditions/actions) written in MVEL language&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;rule-engine-api&quot;&gt;Rule Engine Api&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;drexten&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;rules&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;engine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+
+&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * copyrights Drexten Corp 2010 (Drexten SimpleApi Certified)&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * RuleEngine defines an interface for invoking rules on the provided facts.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * A Fact is an Object which needs to be evaluated upon rule invocation.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * These rules can be used for validation, derivation, logic flow etc.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * The RuleEngine also allows users to categorize rules under rule sets.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * Categorizing rules under rule sets provides better management of rules and&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * easier understanding of overall application behavior.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * The rule engine supports user-defined variables that can be used implicitly in&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * the rules. This may be required if your rules need to access services which are&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * not passed as facts. These variables can be of global nature, meaning they will be &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * automatically available for use in any rule. Or they can be limited in scope to a&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * ruleset, meaning they will be available to any rule with the given ruleset for which&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * the variables are defined. &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * Current Implementations:&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; *&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * XpressIt : An expression based rules engine that supports defining rules in widely&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * used java expression languages MVEL and OGNL.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * @author ashok shamnani&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; *&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RuleEngine&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    
+   &lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;    * Fires the rule with the given name . The invoked rule evaluates the passed facts.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;    * @param ruleName name of the rule&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;    * @param facts to be evaluated&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;    * @return &amp;lt;code&amp;gt;RuleEvalResult&amp;lt;/code&amp;gt; results of rule evaluation&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;    * @throws RuleException&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;    */&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleEvalResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fireRule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Fact&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;facts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;    
+    
+    &lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * Fires the rule with the given name in the given ruleset . The invoked rule evaluates the passed facts.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param ruleName name of the rule&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param ruleSet name of the rule set&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param facts to be evaluated&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @return &amp;lt;code&amp;gt;RuleEvalResult&amp;lt;/code&amp;gt; results of rule evaluation&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @throws RuleException&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleEvalResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fireRule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Fact&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;facts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * Fires all the rules in the given rule set. The invoked rules in rule set evaluates the passed facts.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * If any of the rule in the rule set retracts any of the fact(s), subsequent rules in the rule set&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * relying on the availability of the fact will not be fired.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param ruleSet name of the rule set&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param facts to be evaluated&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @return &amp;lt;code&amp;gt;RuleEvalResult&amp;lt;/code&amp;gt; results of rule evaluation&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @throws RuleException&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleEvalResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fireRuleSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ruleSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Fact&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;facts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * Fires all the rules available in the rule engine. The invoked rules in rule set evaluates the passed facts.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * If any of the rule in the rule set retracts any of the fact(s), subsequent rules in the rule set&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * relying on the availability of the fact will not be fired.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param ruleSet name of the rule set&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param facts to be evaluated&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @return &amp;lt;code&amp;gt;RuleEvalResult&amp;lt;/code&amp;gt; results of rule evaluation&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @throws RuleException&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleEvalResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fireAllRules&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fact&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;facts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RuleException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;xpressit&quot;&gt;XpressIt&lt;/h2&gt;
+
+&lt;p&gt;XpressIt is a full featured implementation of rules engine based in the blueprint discussed above. Find below the download links and QuickStart guide for
+XpressIt&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/goashok/XpressIt&quot;&gt;XpressIt&lt;/a&gt;, You can find the test classes in src/main/test.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.drexten.com/documentation/?page_id=27&quot;&gt;QuickStart&lt;/a&gt;, A quick start guide that covers all the features supported by XpressIt. Highly recommend
+to take a look in case you need to build your own implementation.&lt;/li&gt;
+&lt;/ul&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://techieslikeme.com/articles/create-rules-engine&quot;&gt;Create Your Own Rules Engine Using MVEL and XML&lt;/a&gt; was originally published by smtechnocrat at &lt;a href=&quot;http://techieslikeme.com&quot;&gt;Techies Like Me&lt;/a&gt; on September 14, 2013.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
   <title type="html"><![CDATA[Build your own web site in 10 easy steps.]]></title>
-  <link rel="alternate" type="text/html" href="/articles/sm-post1" />
-  <id>/articles/sm-post1</id>
+  <link rel="alternate" type="text/html" href="http://techieslikeme.com/articles/sm-post1" />
+  <id>http://techieslikeme.com/articles/sm-post1</id>
   <updated>2013-08-18T00:00:00-00:00</updated>
-  <published>2013-08-17T00:00:00-04:00</published>
+  <published>2013-08-17T00:00:00+01:00</published>
   
   <author>
     <name>smtechnocrat</name>
-    <uri></uri>
-    <email>your@email.com</email>
+    <uri>http://techieslikeme.com</uri>
+    <email>smtechnocrat@gmail.com</email>
   </author>
   <content type="html">&lt;section id=&quot;table-of-contents&quot; class=&quot;toc&quot;&gt;
   &lt;header&gt;
@@ -38,7 +255,7 @@
   &lt;li&gt;&lt;a href=&quot;#building-your-site-in-10-easy-steps&quot;&gt;Building your site in 10 easy steps.&lt;/a&gt;    &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;#pre-requisites&quot;&gt;Pre-requisites&lt;/a&gt;&lt;/li&gt;
       &lt;li&gt;&lt;a href=&quot;#step-1---install-jekyll&quot;&gt;Step 1 - Install Jekyll&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#step-2---choose-a-theme-for-your-site&quot;&gt;Step 2 - Choose a Theme for your site&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#step-2---choose-a-theme-for-your-site&quot;&gt;Step 2 - Choose a theme for your site&lt;/a&gt;&lt;/li&gt;
       &lt;li&gt;&lt;a href=&quot;#step-3---configure-your-site&quot;&gt;Step 3 - Configure your site&lt;/a&gt;&lt;/li&gt;
       &lt;li&gt;&lt;a href=&quot;#step-4---start-writing-your-own-posts&quot;&gt;Step 4 - Start writing your own posts&lt;/a&gt;&lt;/li&gt;
       &lt;li&gt;&lt;a href=&quot;#step-5---build-and-deploy-your-site&quot;&gt;Step 5 - Build and Deploy your site&lt;/a&gt;&lt;/li&gt;
@@ -60,7 +277,7 @@
 &lt;/section&gt;
 &lt;!-- /#table-of-contents --&gt;
 
-&lt;p&gt;Below is just about everything I needed  to know about building your very own website. It is easy to build and if you use github then it will be even easier to maintain.&lt;/p&gt;
+&lt;p&gt;Below is just about everything you need to know about building your very own website. It is easy to build and if you use github then it will be even easier to maintain. But as with everything else if you want to dig in deeper and understand how this all works then you will need to devote more time.&lt;/p&gt;
 
 &lt;p&gt;Before I start I must thank &lt;a href=&quot;http://http://mademistakes.com/about.html&quot;&gt;Michael Rose&lt;/a&gt; for providing this awesome theme for my blog. Check out his github template.&lt;/p&gt;
 
@@ -68,7 +285,7 @@
 &lt;p&gt;First of Jekyll is the engine behind GitHub web pages. It is a Ruby script used to generate static HTML websites from source text and themes. HTML is generated before being deployed to the web server therefore it is a static website which can be make your website extremely fast and secure. &lt;/p&gt;
 
 &lt;h3 id=&quot;why-use-jekyll&quot;&gt;Why use Jekyll?&lt;/h3&gt;
-&lt;p&gt;There are a number of popular blogging platforms available today. However if you want to host your own website you will need to know all the performance tweaks and optimizations otherwise these hosted platforms can easily bring down your server. You will also find a number of popular third party firms that specializes in blog hosting services such as WPEngine and Wordpress.com&lt;/p&gt;
+&lt;p&gt;There are a number of popular blogging platforms available today. However if you want to host your own website you will need to know all the performance tweaks and optimizations otherwise these hosted platforms can easily bring down your server. You will also find a number of popular third party firms that specializes in blog hosting services such as WPEngine and Wordpress.com, you are welcome to use them if you so like.&lt;/p&gt;
 
 &lt;h3 id=&quot;a-whirlwind-tour-of-jekyll&quot;&gt;A Whirlwind tour of Jekyll&lt;/h3&gt;
 
@@ -115,13 +332,58 @@
 
 &lt;ul&gt;
   &lt;li&gt;
-    &lt;h5 id=&quot;step-2---choose-a-theme-for-your-site&quot;&gt;Step 2 - Choose a Theme for your site&lt;/h5&gt;
-    &lt;p&gt;You can use any theme you like including create your own theme. But if you are like me who would rather spend time doing server side coding then there are a lot of generous folks who have created excellent themes for use.
-I have used Michael Rose’s minimal mistakes theme, he also has a newer theme as well. check his themes out. But here are some other alternatives to choose from&lt;/p&gt;
+    &lt;h5 id=&quot;step-2---choose-a-theme-for-your-site&quot;&gt;Step 2 - Choose a theme for your site&lt;/h5&gt;
   &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You can use any theme you like including create your own theme. But if you are like me who would rather spend time doing server side coding then there are a lot of generous folks who have created excellent themes for us to use. Don’t forget to give them a mention in your site.&lt;/p&gt;
+
+&lt;p&gt;I have used Michael Rose’s minimal mistakes theme, he also has a newer theme as well. check his themes out. But here are some other alternatives to choose from. Here are a few&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/mojombo/jekyll/wiki/sites&quot;&gt;A List of Jekyll powered sites with source to choose from.&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://jekyllthemes.org/&quot;&gt;Jekyll Themes hosts a few themes mostly based on Twitter Bootstrap&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You can either fork off from one of the github sites listed and configure it to be your own or download a theme from Jekyll Themes. There are few other options available as well.&lt;/p&gt;
+
+&lt;p&gt;If you are very familar with CSS, LESS and Twitter Bootstrap then feel free to create your own theme.&lt;/p&gt;
+
+&lt;ul&gt;
   &lt;li&gt;
     &lt;h5 id=&quot;step-3---configure-your-site&quot;&gt;Step 3 - Configure your site&lt;/h5&gt;
+    &lt;p&gt;Before you can configure your Jekyll generated website, here is how the structure of the site looks like:&lt;/p&gt;
   &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; All config is &lt;span class=&quot;k&quot;&gt;done &lt;/span&gt;in YAML format
+
+├── _config.yml - contains all configurations parameters &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;the 
+|                 site
+|
+├── _includes - allows you to add your own custom header,footer 
+|               or any other inserts
+|   ├── footer.html
+|   └── header.html
+|
+├── _layouts - contains all templates that wrap posts 
+|              Layouts are chosen on a post-by-post basis in the 
+|              YAML front matter              
+|   ├── default.html
+|   └── post.html
+|
+├── _posts
+|   ├── 2007-10-29-postname.md
+|   └── 2009-04-26-postname.md
+|
+├── _site
+|
+└── index.html
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If you choose to use themes from github resources listed above then you will only need to change _config.yml file and about.md file. I will be posting more on how to integrate Twitter Bootstrap or create your own custom theme later on, once I have mastered it myself. The configuration parameters are pretty much self explanatory so it should not be an issue. Here is how my _config.yml looks like, now remember I am using a pre-built theme therefore not all themes will have the same parameters.&lt;/p&gt;
+
+&lt;ul&gt;
   &lt;li&gt;
     &lt;h5 id=&quot;step-4---start-writing-your-own-posts&quot;&gt;Step 4 - Start writing your own posts&lt;/h5&gt;
   &lt;/li&gt;
@@ -132,7 +394,7 @@ I have used Michael Rose’s minimal mistakes theme, he also has a newer theme a
 
 &lt;h3 id=&quot;conclusions&quot;&gt;Conclusions&lt;/h3&gt;
 
-&lt;p class=&quot;pull-right&quot;&gt;&lt;img src=&quot;/images/3953273590_704e3899d5_m.jpg&quot; alt=&quot;Smithsonian Image&quot; /&gt;&lt;/p&gt;
+&lt;p class=&quot;pull-right&quot;&gt;&lt;img src=&quot;http://techieslikeme.com/images/3953273590_704e3899d5_m.jpg&quot; alt=&quot;Smithsonian Image&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;This is emphasized&lt;/em&gt;. Donec faucibus. Nunc iaculis suscipit dui. 53 = 125. Water is H2O. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. The New York Times (That’s a citation). Underline.Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.&lt;/p&gt;
 
@@ -235,7 +497,7 @@ I have used Michael Rose’s minimal mistakes theme, he also has a newer theme a
 &lt;div&gt;&lt;a href=&quot;#&quot; class=&quot;btn btn-inverse btn-small&quot;&gt;Small inverse button&lt;/a&gt;&lt;/div&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;/articles/sm-post1&quot;&gt;Build your own web site in 10 easy steps.&lt;/a&gt; was originally published by smtechnocrat at &lt;a href=&quot;&quot;&gt;Techies Like Me&lt;/a&gt; on August 17, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://techieslikeme.com/articles/sm-post1&quot;&gt;Build your own web site in 10 easy steps.&lt;/a&gt; was originally published by smtechnocrat at &lt;a href=&quot;http://techieslikeme.com&quot;&gt;Techies Like Me&lt;/a&gt; on August 17, 2013.&lt;/p&gt;</content>
 </entry>
 
 </feed>

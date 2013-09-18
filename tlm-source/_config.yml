@@ -3,6 +3,7 @@ tagline:          Welcoming all Techies
 description:      A website to share your experience and make this world more technology savy.
 #Comment out url when working locally to resolve base urls correctly
 url:              http://techieslikeme.com
+#url: http://localhost:4000
 
 # Owner/author information
 owner:
@@ -19,8 +20,22 @@ owner:
   lastfm:         
   tumblr:         
   # For Google Authorship https://plus.google.com/authorship
-  google_plus:    
+  google_plus:
 
+author_ids:
+  smtechnocrat : 0
+  goashok: 1  
+authors:
+  - name: smtechnocrat          
+    avatar: bio-smtechnocrat.jpg
+    bio: "A self proclaimed technocrat..."
+    email: smtechnocrat@gmail.com
+  - name: goashok
+    avatar: bio-goashok.jpg
+    bio: "A self proclaimed technocrat..."
+    email: goashok@gmail.com
+    github: goashok
+  
 # Analytics and webmaster tools stuff goes here
 google_analytics:   
 google_verify:      
